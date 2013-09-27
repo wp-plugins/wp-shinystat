@@ -2,102 +2,92 @@
 /*
 Plugin Name: ShinyStat Widget
 Plugin URI: http://www.ruscibar.it/wp-shinystat
-Description: Adds ShinyStat counter to your blog.
+Description: Adds ShinyStat counter to your Wordpress
 Author: Paolo Rossi
-Version: 0.2
+Version: 0.3
 Author URI: http://www.ruscibar.it/
 
-Credits: based on MyBlogLog Widget
 */
 
-### Create Text Domain For Translations
+// Create Text Domain For Translations
 load_plugin_textdomain('wp-shinystat', 'wp-content/plugins/wp-shinystat');
 
-// This gets called at the plugins_loaded action
-function widget_shinystat_init() {
-	
-	// Check for the required API functions
-	if ( !function_exists('register_sidebar_widget') || !function_exists('register_widget_control') )
-		return;
+// The example widget class
+class Shinystat_Widget extends WP_Widget {
 
-	// This saves options and prints the widget's config form.
-	function widget_shinystat_control() {
-		$options = $newoptions = get_option('widget_shinystat');
-		if ( $_POST['shinystat-submit'] ) {
-      $valid_code = trim(stripslashes($_POST['shinystat-code']));
-
-      // Making sure it's a ShinyStat widget
-      $n_m = preg_match('/<(script|a)(.+)(src|href)(.+)(shinystat\.(com|it)\/)(.+)<\/(script|a)>/im', $valid_code);
-      if($n_m == 0) {
-        $valid_code = '';
-      }
-      /*
-      */
-			$newoptions['shinystat_code'] = $valid_code;
-      
-      $frameless = trim(stripslashes($_POST['shinystat-frameless']));
-      if ($frameless)
-        $frameless = true;
-      else
-        $frameless = false;
-              
-  		$newoptions['shinystat_frameless'] = $frameless;
-		}
-		if ( $options != $newoptions ) {
-			$options = $newoptions;
-			update_option('widget_shinystat', $options);
-		}
-	?>
-				<div>
-				  <p style="text-align:left"><?php _e('ShinyStat provides you real time web analytics and web counter for your blog.', 'wp-shinystat'); ?></p>
-				  <p style="text-align:left"><?php _e('To make it work, you must <a href="http://www.shinystat.com">register</a>, copy the HTML code provided by ShinyStat and then paste it below.', 'wp-shinystat'); ?></p>
-         	<textarea id="shinystat-code" name="shinystat-code" style="width:370px;height:110px;padding:0px;margin:0px;"><?php echo wp_specialchars($options['shinystat_code'], true); ?></textarea>
-         	<p style="text-align:left"><input type="checkbox" id="shinystat-frameless" name="shinystat-frameless" value="true" <?php if ($options['shinystat_frameless'] == true) { echo 'checked'; }?>/><label for="shinystat-frameless"><?php _e('Display widget without frame', 'wp-shinystat') ?></label></p>
-				  <input type="hidden" name="shinystat-submit" id="shinystat-submit" value="1" />
-				</div>
-	<?php
+// Widget Settings
+	public function __construct() {
+		$widget_ops = array( 'classname' => 'wp-shinystat', 'description' => __('Adds ShinyStat counter to your blog', 'wp-shinystat') );
+		$control_ops = array( 'id_base' => 'widget-shinystat');
+		$this->WP_Widget( 'widget-shinystat', __('Shinystat Widget', 'wp-shinystat'), $widget_ops, $control_ops );
 	}
 
-	// This prints the widget
-	function widget_shinystat($args) {
+
+  // display the widget
+  public function widget($args, $instance) {
 		global $user_ID;
 		global $user_level;
 
-		extract($args);
-		$defaults = array();
-		$options = (array) get_option('widget_shinystat');
+		if ( $instance['shinystat_code'] && ( !$user_ID || intval($user_level) <= 1 ) ) {
+      echo $args['before_widget'];
 
-		foreach ( $defaults as $key => $value )
-			if ( !isset($options[$key]) )
-				$options[$key] = $defaults[$key];
+      // Add tracker
+      if ( $instance['shinystat_code'] ) {
+        echo $instance['shinystat_code'];
+      }
 
+      echo $args['after_widget'];
+    }
+  }
 
-		if ( $options['shinystat_code'] && ( !$user_ID || intval($user_level) <= 1 ) )
-		{
-  		if ($options['shinystat_frameless'] == true) {
-    		echo '<li style="background-color: transparent; background-image: none">';
-      } else {
-    		echo $before_widget;
-			  echo $before_title . "" . $after_title;
-			}
-			echo $options['shinystat_code'];
-  		if ($options['shinystat_frameless'] == true)
-  			echo '</li>';
-      else  
-    		echo $after_widget;
-		}
-		?>
+  // update the widget
+  public function update($new_instance, $old_instance) {
+    $instance = array();
 
+    // Validate tracker
+    $valid_code = trim(stripslashes($new_instance['shinystat_code']));
+    $n_m = preg_match('/<(script|a)(.+)(src|href)(.+)(shinystat\.(com|it)\/)(.+)<\/(script|a)>/im', $valid_code);
+    if ($n_m == 0) {
+      $valid_code = '<!-- NOT VALID CODE -->';
+    }
+
+    //Strip tags from title and name to remove HTML
+    $instance['shinystat_code'] = ( ! empty( $valid_code ) ) ? $valid_code : '<!-- Zoo bar -->';
+
+    return $instance;
+  }
+
+  // and of course the form for the widget options
+  public function form($instance) {
+    //Set up some default widget settings.
+    $defaults = array( 'shinystat_code' => '');
+    $instance = wp_parse_args( (array) $instance, $defaults );
+?>
+<div>
+  <p style="text-align:left"><?php _e('ShinyStat provides real time web analytics and web counter for your website.', 'wp-shinystat'); ?></p>
+  <p style="text-align:left"><?php _e('To make it work, you must <a href="http://www.shinystat.com">register</a>, copy the HTML code provided by ShinyStat and then paste it below.', 'wp-shinystat'); ?></p>
+  <textarea id="<?php echo $this->get_field_id( 'shinystat_code' ); ?>" name="<?php echo $this->get_field_name( 'shinystat_code' ); ?>" style="width:370px;height:110px;padding:0px;margin:0px;"><?php echo $instance['shinystat_code']; ?></textarea>
+  <input type="hidden" name="shinystat-submit" id="shinystat-submit" value="1" />
+</div>
 <?php
-	}
-
-	// Tell Dynamic Sidebar about our new widget and its control
-	register_sidebar_widget('ShinyStat', 'widget_shinystat');
-	register_widget_control('ShinyStat', 'widget_shinystat_control', 370, 300);
-	
+  }
 }
 
-// Delay plugin execution to ensure Dynamic Sidebar has a chance to load first
-add_action('widgets_init', 'widget_shinystat_init');
+// function to register my widget
+function widget_shinystat_init() {
+    register_widget( 'Shinystat_Widget' );
+}
+
+add_action( 'widgets_init', 'widget_shinystat_init' );
+
+// Add settings link on plugin page
+function your_plugin_settings_link($links) { 
+  $settings_link = '<a href="widgets.php">' . __('Manage', 'wp-shinystat') . '</a>'; 
+  array_unshift($links, $settings_link); 
+  return $links; 
+}
+ 
+$plugin = plugin_basename(__FILE__); 
+add_filter("plugin_action_links_$plugin", 'your_plugin_settings_link' );
 
 ?>

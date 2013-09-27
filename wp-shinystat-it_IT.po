@@ -9,13 +9,19 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-KeywordsList: __;_e\n"
 "X-Poedit-Basepath: .\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Paolo Rossi\n"
+"Language-Team: \n"
 "X-Poedit-SearchPath-0: .\n"
 
-msgid "ShinyStat provides you real time web analytics and web counter for your blog."
-msgstr "ShinyStat ti offre contatori e statistiche web in tempo reale per il tuo blog."
+msgid "ShinyStat provides real time web analytics and web counter for your website."
+msgstr "ShinyStat ti offre contatori e statistiche web in tempo reale per il tuo sito."
 
 msgid "To make it work, you must <a href=\"http://www.shinystat.com\">register</a>, copy the HTML code provided by ShinyStat and then paste it below."
 msgstr "Per attivare ShinyStat sul tuo blog, devi <a href=\"http://www.shinystat.com\">registrarti</a>, copiare il codice HTML fornito da ShinyStat ed incollarlo nel riquadro sottostante."
 
-msgid "Display widget without frame"
-msgstr "Non mostrare la cornice del widget"
+msgid "Manage"
+msgstr "Configura"
+

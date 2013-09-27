@@ -1,10 +1,10 @@
-=== Plugin Name ===
+ === Plugin Name ===
 Contributors: Paolo Rossi
 Donate link: http://www.ruscibar.it/donate/
 Tags: statistics
-Requires at least: 2.2.0
-Tested up to: 2.7
-Stable tag: 0.2
+Requires at least: 2.8
+Tested up to: 3.6
+Stable tag: 0.3
 
 WP-ShinyStat is a WordPress plugin that allows a simple integration of ShinyStat counter into your blog sidebar.
 
@@ -12,7 +12,7 @@ WP-ShinyStat is a WordPress plugin that allows a simple integration of ShinyStat
 
 WP-ShinyStat is a WordPress plugin that allows a simple integration of ShinyStat counter into your blog sidebar.
 
-WP-ShinyStat doesn’t show ShinyStat counter (and doesn't track visits) when you are connected to your blog as admin user.
+WP-ShinyStat doesn't show ShinyStat counter (and doesn't track visits) when you are connected to your blog as admin user.
 
 == Installation ==
 
